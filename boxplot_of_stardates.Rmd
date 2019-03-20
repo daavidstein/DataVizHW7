@@ -9,8 +9,9 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(dplyr)
+library(tidyverse)
 library(rtrek)
+library(plotly)
 ```
 
 ## Boxplot of Stardates
@@ -18,8 +19,17 @@ library(rtrek)
   stapi("episode", page_count = TRUE) # check first
 # stapi("episode", page = 2) %>% select(1:2)
  stapi("episode")
- episode <- stapi("episode")
-  Q$episodes %>% select(uid, title, stardateFrom, stardateTo)
+ ep<- stapi("episode")
+ ep_trim <- ep %>%  select(series.title, stardateFrom, stardateTo) %>% drop_na
   
+p <- plot_ly(ep_trim, y = ~stardateFrom, color = ~series.title, type = "box")
+p %>%
+  layout(
+    yaxis = list(
+      showexponent = "all",
+      separatethousands = FALSE, #doesn't seem to be working
+      exponentformat = "none"
+    )
+  )
 ```
 

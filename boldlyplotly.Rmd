@@ -1,0 +1,27 @@
+---
+title: "To Boldly Plot"
+subtitle: "There is more to running a starship than answering a bunch of damn fool questions."
+author: "Faith Benamy, Daavid Stein, Brenton Avril"
+date: "3/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Setup
+```{r, message = FALSE, warning = FALSE}
+#install.packages('rtrek')
+library(rtrek)
+library(tidyverse) 
+trek_data <- read_csv("trek_data.csv")
+``` 
+
+
+# 1st Damn Fool Question: 
+## Is there a difference in the distribution of number of characters per episode by series?  
+
+# 2nd Damn Fool Question: 
+## Does the average percentage of female characters per episode vary by series? 
+

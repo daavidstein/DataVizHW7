@@ -13,14 +13,31 @@ knitr::opts_chunk$set(echo = TRUE)
 # Setup
 ```{r, message = FALSE, warning = FALSE}
 #install.packages('rtrek')
+#install.packages('ggsci')
 library(rtrek)
 library(tidyverse) 
+library(plotly)
+library(ggsci)
+#load data
 trek_data <- read_csv("trek_data.csv")
+#reorder series levels for plotting   
+trek_data$Series <- fct_relevel(trek_data$Series, c("TOS", "TNG", "DS9", "VOY"))
 ``` 
 
 
 # 1st Damn Fool Question: 
 ## Is there a difference in the distribution of number of characters per episode by series?  
+
+```{r}
+p <- plot_ly(trek_data, y = ~NChars, color = ~Series, 
+             colors =  pal_startrek("uniform")(4)) %>% 
+      add_boxplot(x = ~Series) %>% 
+      hide_legend() %>%
+      layout(title = "Number of Characters Per Episode By Series",
+             xaxis = list(title = "Series"),
+             yaxis = list(title = "Number of Characters \n (per episode)"))
+p
+```
 
 # 2nd Damn Fool Question: 
 ## Does the average percentage of female characters per episode vary by series? 

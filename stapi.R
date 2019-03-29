@@ -6,6 +6,3 @@ library(rtrek)
   Q$episodes %>% select(uid, title, stardateFrom, stardateTo)
   
   
-#could look at distribution of stardateFroms
-# alternatively, look at the difference between stardateTo and stardateFrom 
-#(ie, duration of episode)

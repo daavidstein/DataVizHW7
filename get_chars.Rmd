@@ -1,0 +1,109 @@
+---
+title: "Distribution of Characters by Series"
+author: "Daavid Stein"
+date: "March 28, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rtrek)
+library(plotly)
+```
+```{r}
+
+
+ep<- stapi("episode")
+char <- stapi("character")
+series <-stapi("series")
+```
+
+```{r}
+#Faith's code. modify this.
+
+#setwd("~/Documents/GradSchool/DataViz/Homework/DataVizHW7")
+library(rtrek) 
+library(tidyverse) 
+TNG_uid <- "SEMA0000062876"
+DS9_uid <- "SEMA0000073238" 
+TOS_uid <- "SEMA0000097474"
+VOY_uid <- "SEMA0000000029"
+TNG_episodes <- stapi("series", uid = TNG_uid)$episodes$uid
+DS9_episodes <- stapi("series", uid = DS9_uid)$episodes$uid
+TOS_episodes <- stapi("series", uid = TOS_uid)$episodes$uid
+VOY_episodes <- stapi("series", uid = VOY_uid)$episodes$uid
+TNG <- tibble(Episode = TNG_episodes, Series = "TNG") 
+DS9 <- tibble(Episode = DS9_episodes, Series = "DS9") 
+TOS <- tibble(Episode = TOS_episodes, Series = "TOS") 
+VOY <- tibble(Episode = VOY_episodes, Series = "VOY") 
+episodes_df <- bind_rows(TNG, DS9, TOS, VOY)
+
+for(i in 564:nrow(episodes_df)){
+  chars <- stapi("episode", 
+                 uid = episodes_df$Episode[i])$characters
+  if(is.null(nrow(chars))){
+    episodes_df$NChars[i] <- NA
+    episodes_df$N_F[i] <- NA
+  }else{
+    women <- chars %>%
+      filter(gender == "F")
+    episodes_df$NChars[i] <- nrow(chars)
+    episodes_df$N_F[i] <- nrow(women)
+  }
+}
+
+write.csv(episodes_df, "trek_data.csv")
+
+
+```
+```{r}
+
+chars = data.frame()
+for (i in 1:length(TNG_episodes)){
+  
+  ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
+  chars <- rbind(chars,ep_chars)
+  
+  
+}
+
+tng_top_10 <-chars %>% group_by(name) %>% count() %>% arrange(desc(n)) %>% head(10)
+
+p <- plot_ly(tng_top_10, x = ~names, y = ~n, type = 'bar', name = 'Top 10 Characters by Number of Appearances in Star Trek: TNG') 
+  
+
+```
+
+```{r}
+
+series_vec <- episodes_df %>% select(Series) %>% distinct
+
+for (i in 1:length(series_vec)){
+  cur_series <-series_vec[i]
+  eps <- episodes_df %>% filter(Series == cur_series) %>% select(Episode, Series)
+  
+    for (i in 1:nrow(eps)){
+       ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
+  chars <- rbind(chars,ep_chars)
+      
+    }
+  
+  
+}
+
+top_chars <- list()
+
+chars = data.frame()
+for (i in 1:length(series)){
+  
+  ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
+  chars <- rbind(chars,ep_chars)
+  
+  
+}
+
+
+```

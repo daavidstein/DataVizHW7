@@ -67,43 +67,50 @@ for (i in 1:length(TNG_episodes)){
   ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
   chars <- rbind(chars,ep_chars)
   
-  
+ 
 }
 
-tng_top_10 <-chars %>% group_by(name) %>% count() %>% arrange(desc(n)) %>% head(10)
-
-p <- plot_ly(tng_top_10, x = ~names, y = ~n, type = 'bar', name = 'Top 10 Characters by Number of Appearances in Star Trek: TNG') 
-  
 
 ```
 
 ```{r}
 
-series_vec <- episodes_df %>% select(Series) %>% distinct
+
+abrConv <- function(abbr){
+  
+    return(switch(abbr, "TNG" = "The Next Generation", "VOY" = "Voyager", "DS9" = "Deep Space 9","TOS" = "The Original Series"))
+ 
+  
+  
+}
+series_tbl <- episodes_df %>% select(Series) %>% distinct
+series_vec <-series_tbl$Series
+plots <-list()
 
 for (i in 1:length(series_vec)){
   cur_series <-series_vec[i]
+  cur_series <-"TNG"
   eps <- episodes_df %>% filter(Series == cur_series) %>% select(Episode, Series)
   
-    for (i in 1:nrow(eps)){
-       ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
-  chars <- rbind(chars,ep_chars)
+    for (j in 1:nrow(eps)){
+       ep_chars <- stapi("episode", 
+                         uid = eps$Episode[j])$characters %>%  select(name)
+       
       
+       chars <- rbind(chars,ep_chars)
+      
+
     }
   
-  
+    top_10 <-chars %>% group_by(name) %>% count() %>% arrange(desc(n)) %>% head(10)
+top_10$name <- factor(top_10$name, levels = top_10$name[order(top_10$n)]) #change the factor levels to correspond with counts so that plotly will order the bars correctly.
+  p <- plot_ly(top_10, x = ~names, y = ~n, type = 'bar', name = paste0('Top 10 Characters by Number of Appearances in Star Trek: ', abrConv(cur_series)))
+   #assign(paste0(cur_series, "_plot"), p)
+   plots[[i]] <-p
+ 
 }
 
-top_chars <- list()
 
-chars = data.frame()
-for (i in 1:length(series)){
-  
-  ep_chars <- stapi("episode", uid = TNG_episodes[i])$characters %>% select(name)
-  chars <- rbind(chars,ep_chars)
-  
-  
-}
 
 
 ```

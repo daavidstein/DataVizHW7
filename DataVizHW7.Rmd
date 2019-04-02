@@ -1,0 +1,63 @@
+---
+title: "Untitled"
+author: "Brenton Avril"
+date: "April 1, 2019"
+output: html_document
+---
+
+
+```{r}
+library(dplyr)
+library(plotly)
+
+df<-read.csv("trek_data.csv")
+
+m<-rep(NA,nrow(df))
+
+for(i in 1:nrow(df)){
+  m[i]<-df$N_F[i]/df$NChars[i]
+}
+
+m<-m[!is.na(m)]
+
+boundary<-.2
+
+Series<-c("TOS","TNG","DS9","VOY")
+
+dfds9<-filter(df,Series=="DS9")
+
+dftng<-filter(df,Series=="TNG")
+
+dftos<-filter(df,Series=="TOS")
+
+dfvoy<-filter(df,Series=="VOY")
+
+ds91<-nrow(filter(dfds9,N_F/NChars>=boundary))/nrow(dfds9)
+
+ds92<-1-ds91
+
+tng1<-nrow(filter(dftng,N_F/NChars>=boundary))/nrow(dftng)
+
+tng2<-1-tng1
+
+tos1<-nrow(filter(dftos,N_F/NChars>=boundary))/nrow(dftos)
+
+tos2<-1-tos1
+
+voy1<-nrow(filter(dfvoy,N_F/NChars>=boundary))/nrow(dfvoy)
+
+voy2<-1-voy1
+
+prop1<-c(tos1,tng1,ds91,voy1)
+
+prop2<-c(tos2,tng2,ds92,voy2)
+
+data<-data.frame(Series,prop1,prop2)
+
+p <- plot_ly(data, x = ~Series, y = ~prop1, type = 'bar', name = 'At Least 20% Female') %>%
+  add_trace(y = ~prop2, name = 'Less Than 20% Female') %>%
+  layout(title="Proportion of Episodes of which the Characters Are at Least 20% Female, by Series",yaxis = list(title = 'Proportion of Episodes'), barmode = 'group')
+
+p
+
+```
